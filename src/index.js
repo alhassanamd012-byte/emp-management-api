@@ -10,6 +10,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Routes
+const authRoutes = require('./routes/auth');
+const employeeRoutes = require('./routes/employee');
+const attendanceRoutes = require('./routes/attendance');
+const salaryRoutes = require('./routes/salary');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/salary', salaryRoutes);
+
 // Test route
 app.get('/', (req, res) => {
   res.json({ message: 'Employee Management API is running!' });
