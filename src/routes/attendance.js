@@ -5,7 +5,7 @@ const Attendance = require('../models/Attendance');
 // Company location (geo-fence center) - Admin will update this
 const COMPANY_LAT = 26.3732628;
 const COMPANY_LNG = 85.5358269;
-const ALLOWED_RADIUS_METERS = 500;
+const ALLOWED_RADIUS_METERS = 2000;
 
 // Calculate distance between two coordinates
 function getDistance(lat1, lng1, lat2, lng2) {
