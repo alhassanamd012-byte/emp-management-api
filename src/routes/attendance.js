@@ -28,14 +28,14 @@ router.post('/checkin', async (req, res) => {
     if (!isWithinZone) {
       return res.status(400).json({
         success: false,
-        message: 'Aap company zone ke bahar hain! Attendance nahi lag sakti.',
+        message: 'You are outside the company zone! Attendance cannot be marked.',
         distance: Math.round(distance) + ' meters away'
       });
     }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const existing = await Attendance.findOne({ employee: employeeId, date: today });
-    if (existing) return res.status(400).json({ success: false, message: 'Aaj ki attendance pehle se lag chuki hai' });
+    if (existing) return res.status(400).json({ success: false, message: 'Attendance already marked for today' });
     const attendance = new Attendance({
       employee: employeeId,
       date: today,
@@ -45,7 +45,7 @@ router.post('/checkin', async (req, res) => {
       isWithinZone: true
     });
     await attendance.save();
-    res.json({ success: true, message: 'Check in successful!', attendance });
+    res.json({ success: true, message: 'Check-in successful! Attendance recorded.', attendance });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -61,7 +61,7 @@ router.post('/checkout', async (req, res) => {
     if (!attendance) return res.status(404).json({ success: false, message: 'Aaj ki attendance nahi mili' });
     attendance.checkOut = new Date();
     await attendance.save();
-    res.json({ success: true, message: 'Check out successful!', attendance });
+    res.json({ success: true, message: 'Check-out successful!', attendance });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
