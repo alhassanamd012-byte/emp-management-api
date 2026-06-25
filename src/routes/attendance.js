@@ -3,8 +3,8 @@ const router = express.Router();
 const Attendance = require('../models/Attendance');
 
 // Company location (geo-fence center) - Admin will update this
-const COMPANY_LAT = 26.1158;
-const COMPANY_LNG = 85.3910;
+const COMPANY_LAT = 26.3732628;
+const COMPANY_LNG = 85.5358269;
 const ALLOWED_RADIUS_METERS = 100;
 
 // Calculate distance between two coordinates
