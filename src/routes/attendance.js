@@ -58,7 +58,7 @@ router.post('/checkout', async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const attendance = await Attendance.findOne({ employee: employeeId, date: today });
-    if (!attendance) return res.status(404).json({ success: false, message: 'Aaj ki attendance nahi mili' });
+    if (!attendance) return res.status(404).json({ success: false, message: 'No attendance record found for today. Please check-in first.' });
     attendance.checkOut = new Date();
     await attendance.save();
     res.json({ success: true, message: 'Check-out successful!', attendance });
