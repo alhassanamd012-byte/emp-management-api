@@ -16,12 +16,14 @@ const employeeRoutes = require('./routes/employee');
 const attendanceRoutes = require('./routes/attendance');
 const salaryRoutes = require('./routes/salary');
 const notificationRoutes = require('./routes/notifications');
+const leaveRoutes = require('./routes/leave');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/salary', salaryRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/leaves', leaveRoutes);
 
 // Test route
 app.get('/', (req, res) => {
