@@ -24,6 +24,7 @@ const employeeSchema = new mongoose.Schema({
   // Status
   isActive: { type: Boolean, default: true },
   role: { type: String, default: 'employee' },
+  pushToken: { type: String, default: null },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Employee', employeeSchema);
