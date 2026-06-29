@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Salary = require('../models/Salary');
 const Attendance = require('../models/Attendance');
+const Employee = require('../models/Employee');
 
 // Generate salary for employee
 router.post('/generate', async (req, res) => {
@@ -32,6 +33,27 @@ router.post('/generate', async (req, res) => {
       netSalary: Math.round(netSalary)
     });
     await salary.save();
+    try {
+      const emp = await Employee.findById(salary.employee);
+      if (emp && emp.pushToken) {
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: emp.pushToken,
+            sound: 'default',
+            title: 'Salary Generated',
+            body: `Your salary for ${salary.month} ${salary.year} has been generated. Amount: ₹${salary.netSalary}`,
+          }),
+        });
+      }
+    } catch(notifError) {
+      console.log('Salary notification error:', notifError.message);
+    }
     res.json({ success: true, message: 'Salary generated!', salary });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
