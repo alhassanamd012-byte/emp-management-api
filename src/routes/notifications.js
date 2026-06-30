@@ -39,13 +39,18 @@ router.post('/send', async (req, res) => {
       },
       body: JSON.stringify(message),
     });
-    await NotificationLog.create({
-      title,
-      body,
-      sentTo: employee.name,
-      sentBy: 'Admin',
-      recipientCount: 1,
-    });
+    // Log is non-fatal: a logging failure must never cause a 500 that triggers admin to retry
+    try {
+      await NotificationLog.create({
+        title,
+        body,
+        sentTo: employee.name,
+        sentBy: 'Admin',
+        recipientCount: 1,
+      });
+    } catch (logErr) {
+      console.log('Notification log error (send):', logErr.message);
+    }
     res.json({ success: true, message: 'Notification sent!' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -75,13 +80,18 @@ router.post('/send-all', async (req, res) => {
       },
       body: JSON.stringify(messages),
     });
-    await NotificationLog.create({
-      title,
-      body,
-      sentTo: 'All Employees',
-      sentBy: 'Admin',
-      recipientCount: employees.length,
-    });
+    // Log is non-fatal: a logging failure must never cause a 500 that triggers admin to retry
+    try {
+      await NotificationLog.create({
+        title,
+        body,
+        sentTo: 'All Employees',
+        sentBy: 'Admin',
+        recipientCount: employees.length,
+      });
+    } catch (logErr) {
+      console.log('Notification log error (send-all):', logErr.message);
+    }
     res.json({ success: true, message: 'Notification sent to ' + messages.length + ' employees!' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
