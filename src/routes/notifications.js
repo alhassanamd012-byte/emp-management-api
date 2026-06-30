@@ -4,7 +4,7 @@ const Employee = require('../models/Employee');
 // Save employee push token
 router.post('/save-token', async (req, res) => {
   try {
-    const { token, pushToken, employeeId } = req.body;
+    const { employeeId, token, pushToken } = req.body;
     const tokenValue = token || pushToken;
     await Employee.findByIdAndUpdate(employeeId, { pushToken: tokenValue });
     res.json({ success: true, message: 'Push token saved' });
@@ -17,7 +17,6 @@ router.post('/send', async (req, res) => {
   try {
     const { employeeId, title, body } = req.body;
     const employee = await Employee.findById(employeeId);
-
     if (!employee?.pushToken) {
       return res.status(404).json({ success: false, message: 'No push token found' });
     }
