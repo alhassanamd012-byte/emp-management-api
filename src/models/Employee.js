@@ -25,6 +25,15 @@ const employeeSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   role: { type: String, default: 'employee' },
   pushToken: { type: String, default: null },
+
+  // Live Location Status
+  lastLocation: {
+    lat: { type: Number, default: null },
+    lng: { type: Number, default: null }
+  },
+  lastLocationTime: { type: Date, default: null },
+  isInsideZone: { type: Boolean, default: true },
+  outsideSince: { type: Date, default: null },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Employee', employeeSchema);

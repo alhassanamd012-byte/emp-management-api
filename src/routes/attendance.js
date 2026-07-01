@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Attendance = require('../models/Attendance');
+const Employee = require('../models/Employee');
 
-// Company location (geo-fence center) - Admin will update this
+// Company location (geo-fence center)
 const COMPANY_LAT = 26.373126;
 const COMPANY_LNG = 85.54603;
 const ALLOWED_RADIUS_METERS = 150;
 
-// Calculate distance between two coordinates
+// Calculate distance between two coordinates (Haversine formula)
 function getDistance(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -25,6 +26,19 @@ router.post('/checkin', async (req, res) => {
     const { employeeId, latitude, longitude } = req.body;
     const distance = getDistance(latitude, longitude, COMPANY_LAT, COMPANY_LNG);
     const isWithinZone = distance <= ALLOWED_RADIUS_METERS;
+
+    // Always update employee location status (even if outside zone)
+    const existingEmployee = await Employee.findById(employeeId);
+    const locationUpdate = {
+      lastLocation: { lat: latitude, lng: longitude },
+      lastLocationTime: new Date(),
+      isInsideZone: isWithinZone,
+      outsideSince: isWithinZone
+        ? null
+        : (existingEmployee?.outsideSince || new Date())
+    };
+    await Employee.findByIdAndUpdate(employeeId, locationUpdate);
+
     if (!isWithinZone) {
       return res.status(400).json({
         success: false,
@@ -32,10 +46,12 @@ router.post('/checkin', async (req, res) => {
         distance: Math.round(distance) + ' meters away'
       });
     }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const existing = await Attendance.findOne({ employee: employeeId, date: today });
     if (existing) return res.status(400).json({ success: false, message: 'Attendance already marked for today' });
+
     const attendance = new Attendance({
       employee: employeeId,
       date: today,

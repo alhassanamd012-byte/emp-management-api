@@ -13,6 +13,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Live zone status for all employees
+router.get('/live-status', async (req, res) => {
+  try {
+    const employees = await Employee.find({ isActive: true })
+      .select('name department designation isInsideZone lastLocation lastLocationTime outsideSince employeeId');
+    res.json({ success: true, employees });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Get single employee
 router.get('/:id', async (req, res) => {
   try {
